@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Salón de la Fama - Astrae</title>
+    <title>Salón de la Fama FJ</title>
     <style>
         :root { --fondo: #0b1120; --panel: #162032; --panel-light: #1e293b; --oro: #fbbf24; --plata: #cbd5e1; --bronce: #b45309; --vic: #3b82f6; --der: #ef4444; --heal: #10b981; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--fondo); color: white; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
@@ -18,7 +18,6 @@
         td:first-child { border-left: 1px solid #334155; border-radius: 10px 0 0 10px; }
         td:last-child { border-right: 1px solid #334155; border-radius: 0 10px 10px 0; }
         
-        /* CÓDEX DEL PWR SCORE - PICTOGRÁFICO */
         .pwr-legend { background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.9)); border: 1px solid var(--oro); border-radius: 15px; padding: 25px; margin-bottom: 25px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 5px 25px rgba(251, 191, 36, 0.15); }
         .pwr-legend h3 { margin: 0 0 15px 0; color: var(--oro); font-size: 1.5em; text-transform: uppercase; letter-spacing: 2px; text-align: center; display: flex; align-items: center; gap: 10px; }
         .pwr-legend-subtitle { color: #94a3b8; font-size: 0.95em; text-align: center; max-width: 800px; margin-bottom: 20px; line-height: 1.5; }
@@ -60,8 +59,8 @@
 
 <div class="main">
     <div class="header-title">
-        <h1>Salón de la Fama - Astrae</h1>
-        <p>Ranking oficial actualizado en tiempo real</p>
+        <h1>Salón de la Fama FJ</h1>
+        <p>Ranking actualizado en tiempo real</p>
     </div>
 
     <div class="tabs">
@@ -71,7 +70,7 @@
 
     <div id="r" class="content active">
         <table>
-            <thead><tr><th style="width: 50px; text-align: center;">Rnk</th><th>Entrenador</th><th>Win Rate</th><th>K | A | I</th><th>Desempeño (Tot / Avg)</th></tr></thead>
+            <thead><tr><th style="width: 50px; text-align: center;">Rnk</th><th>Entrenador</th><th>Win Rate</th><th style="width: 140px;">K | A | I (Tot / Avg)</th><th>Desempeño (Tot / Avg)</th></tr></thead>
             <tbody id="rTable"><tr><td colspan="5" style="text-align: center;">Sincronizando con los servidores de Firebase... 🔥</td></tr></tbody>
         </table>
     </div>
@@ -79,8 +78,8 @@
     <div id="p" class="content">
         
         <div class="pwr-legend">
-            <h3>⚡ El Códex PWR (Escala 0-100)</h3>
-            <div class="pwr-legend-subtitle">El sistema evalúa la <b>Eficiencia Integral</b>. Los puntos generados por tus promedios base se suman y se potencian por tu porcentaje de victorias. El resultado final se califica de 0 a 100, donde 100 es una partida matemáticamente impecable.</div>
+            <h3>⚡ El PWR (Escala Desbloqueada)</h3>
+            <div class="pwr-legend-subtitle">El sistema evalúa la <b>Eficiencia Integral</b> sumando promedios y potenciándolos por el Win Rate %. El cálculo toma como base un esfuerzo brutal de 400 puntos. <b>¡Si superas esa métrica, tu PWR romperá el límite de 100!</b></div>
             <div class="pwr-cards-container">
                 <div class="pwr-card card-kill"><div class="icon">💀</div><div class="value">+2.0</div><div class="unit">pts x Kill</div></div>
                 <div class="pwr-card card-assist"><div class="icon">🤝</div><div class="value">+1.5</div><div class="unit">pts x Assist</div></div>
@@ -96,7 +95,7 @@
         <div style="text-align:center; margin-bottom: 15px; margin-top: 30px;"><h2 style="color: var(--oro); margin: 0; text-transform: uppercase; letter-spacing: 2px;">Salón de la Fama Inmortal</h2></div>
 
         <table>
-            <thead><tr><th style="width: 50px; text-align: center;">Rnk</th><th>Entrenador Leyenda</th><th>Win Rate</th><th>K | A | I (Promedios)</th><th>Desempeño Global</th></tr></thead>
+            <thead><tr><th style="width: 50px; text-align: center;">Rnk</th><th>Entrenador Leyenda</th><th>Win Rate</th><th style="width: 140px;">K | A | I (Tot / Avg)</th><th>Desempeño Global</th></tr></thead>
             <tbody id="pTable"></tbody>
         </table>
     </div>
@@ -104,7 +103,7 @@
 
 <script>
     // --- CONEXIÓN A FIREBASE REALTIME DATABASE ---
-    const FIREBASE_URL = 'https://ranking-fj-cb29e-default-rtdb.firebaseio.com'; // <--- ¡AQUÍ VA TU URL!
+    const FIREBASE_URL = 'https://ranking-fj-cb29e-default-rtdb.firebaseio.com'; 
     let dataNube = { temporada: {}, permanente: {} };
 
     function tab(id) {
@@ -120,7 +119,9 @@
             const p = bdObj[n]; const numP = p.p || 1;
             const wr = (p.vic / numP) * 100;
             const perfScore = ((p.k/numP)*2) + ((p.a/numP)*1.5) + (((p.i_stats||0)/numP)*1) + (((p.pts_tot||0)/numP)/10) + (((p.d_tot/numP)/1000)*1) + (((p.rec_tot||0)/numP)/1000*0.8) + (((p.cur_tot||0)/numP)/1000*1.2);
-            let final100Score = Math.min(100, ((perfScore * (1 + (wr / 100))) / 300) * 100);
+            
+            // FÓRMULA ACTUALIZADA: Sin límite
+            let final100Score = (perfScore * (1 + (wr / 100))) / 4;
 
             return { 
                 nombre: n, ...p, score: parseFloat(final100Score.toFixed(1)), wr: wr.toFixed(1),
@@ -148,7 +149,6 @@
         const bd = tipo === 'permanente' ? dataNube.permanente : dataNube.temporada;
         if (!bd) return;
         const data = procesarRanking(bd);
-        const isPerm = tipo === 'permanente';
         
         const maxInf = data.length > 0 ? Math.max(...data.map(d => d.avgInf)) : 0;
         const maxRec = data.length > 0 ? Math.max(...data.map(d => d.avgRec)) : 0;
@@ -165,9 +165,11 @@
             const isTankMVP = j.avgRec === maxRec && j.avgRec > 0 ? `<span class="mvp-icon" title="Mayor Tanqueo Promedio">🛡️</span>` : "";
             const isHealMVP = j.avgCur === maxCur && j.avgCur > 0 ? `<span class="mvp-icon" title="Mayor Curación Promedio">💚</span>` : "";
 
-            const colKAI = isPerm 
-                ? `<td style="font-size:0.95em; line-height: 1.6;"><b style="color:#f87171">Avg K:</b> ${(j.k / (j.p || 1)).toFixed(1)}<br><b style="color:#60a5fa">Avg A:</b> ${(j.a / (j.p || 1)).toFixed(1)}<br><b style="color:#fcd34d">Avg I:</b> ${((j.i_stats || 0) / (j.p || 1)).toFixed(1)}</td>`
-                : `<td style="font-size:0.95em; line-height: 1.6;"><b style="color:#f87171">Kills:</b> ${j.k}<br><b style="color:#60a5fa">Assists:</b> ${j.a}<br><b style="color:#fcd34d">Interrup:</b> ${j.i_stats || 0}</td>`;
+            const colKAI = `<td style="font-size:0.95em; line-height: 1.6;">
+                <b style="color:#f87171">K:</b> ${j.k} <small style="color:#94a3b8">(Avg: ${(j.k / (j.p || 1)).toFixed(1)})</small><br>
+                <b style="color:#60a5fa">A:</b> ${j.a} <small style="color:#94a3b8">(Avg: ${(j.a / (j.p || 1)).toFixed(1)})</small><br>
+                <b style="color:#fcd34d">I:</b> ${j.i_stats || 0} <small style="color:#94a3b8">(Avg: ${((j.i_stats || 0) / (j.p || 1)).toFixed(1)})</small>
+            </td>`;
 
             return `<tr class="${rowClass}">
                 <td style="text-align: center;">${rankDisplay}</td>
@@ -182,7 +184,7 @@
             </tr>`;
         });
         
-        const targetBody = isPerm ? 'pTable' : 'rTable';
+        const targetBody = tipo === 'permanente' ? 'pTable' : 'rTable';
         document.getElementById(targetBody).innerHTML = html.join('');
     }
 
