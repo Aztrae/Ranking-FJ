@@ -50,7 +50,7 @@
     <div id="r" class="content active">
         <table>
             <thead><tr><th style="width: 50px; text-align: center;">Rnk</th><th>Entrenador</th><th>Win Rate</th><th>K | A | I</th><th>Desempeño (Tot / Avg)</th></tr></thead>
-            <tbody id="rTable"><tr><td colspan="5" style="text-align: center;">Sincronizando con la base de datos... 📡</td></tr></tbody>
+            <tbody id="rTable"><tr><td colspan="5" style="text-align: center;">Sincronizando con los servidores de Firebase... 🔥</td></tr></tbody>
         </table>
     </div>
 
@@ -63,8 +63,8 @@
 </div>
 
 <script>
-    // --- CONEXIÓN AL PUENTE EN LA NUBE ---
-    const BIN_ID = '69c9adfb36566621a85d3203'; // <--- ¡AQUÍ VA TU BIN ID!
+    // --- CONEXIÓN DIRECTA A TU FIREBASE ---
+    const FIREBASE_URL = 'https://ranking-fj-cb29e-default-rtdb.firebaseio.com'; 
     let dataNube = { temporada: {}, permanente: {} };
 
     function tab(id) {
@@ -74,8 +74,8 @@
         event.currentTarget.classList.add('active');
     }
 
-    // Calcular Ranking Matemático (Copia de la lógica del server para el visor)
     function procesarRanking(bdObj) {
+        if (!bdObj) return [];
         const ranking = Object.keys(bdObj).map(n => {
             const p = bdObj[n]; const numP = p.p || 1;
             const wr = (p.vic / numP) * 100;
@@ -92,11 +92,15 @@
 
     async function fetchNube() {
         try {
-            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { 'X-Bin-Meta': 'false' } });
-            dataNube = await res.json();
-            renderTable('temporada'); // Cargar la primera tabla por defecto
+            const res = await fetch(`${FIREBASE_URL}/ranking.json`);
+            if (!res.ok) throw new Error("Error en la respuesta de red");
+            const data = await res.json();
+            if (data) {
+                dataNube = data;
+                renderTable('temporada'); 
+            }
         } catch (e) {
-            document.getElementById('rTable').innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Error conectando a la base de datos 📡</td></tr>`;
+            document.getElementById('rTable').innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Error conectando a Firebase 🔥📡</td></tr>`;
         }
     }
 
@@ -142,7 +146,7 @@
         document.getElementById(targetBody).innerHTML = html.join('');
     }
 
-    // Auto-actualizar cada 30 segundos
+    // Actualización cada 30 segundos usando el ancho de banda masivo de Firebase
     fetchNube();
     setInterval(fetchNube, 30000); 
 </script>
