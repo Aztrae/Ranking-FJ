@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Salón de la Fama FJ</title>
+    <title>Salón de la Fama - Astrae</title>
     <style>
         :root { --fondo: #0b1120; --panel: #162032; --panel-light: #1e293b; --oro: #fbbf24; --plata: #cbd5e1; --bronce: #b45309; --vic: #3b82f6; --der: #ef4444; --heal: #10b981; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--fondo); color: white; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
@@ -59,8 +59,8 @@
 
 <div class="main">
     <div class="header-title">
-        <h1>Salón de la Fama FJ</h1>
-        <p>Ranking actualizado en tiempo real</p>
+        <h1>Salón de la Fama - Astrae</h1>
+        <p>Ranking oficial actualizado en tiempo real</p>
     </div>
 
     <div class="tabs">
@@ -69,6 +69,22 @@
     </div>
 
     <div id="r" class="content active">
+        
+        <div class="pwr-legend">
+            <h3>⚡ El Códex PWR (Escala Desbloqueada)</h3>
+            <div class="pwr-legend-subtitle">El sistema evalúa la <b>Eficiencia Integral</b> sumando promedios y potenciándolos por el Win Rate %. El cálculo toma como base un esfuerzo brutal de 400 puntos. <b>¡Si superas esa métrica, tu PWR romperá el límite de 100!</b></div>
+            <div class="pwr-cards-container">
+                <div class="pwr-card card-kill"><div class="icon">💀</div><div class="value">+2.0</div><div class="unit">pts x Kill</div></div>
+                <div class="pwr-card card-assist"><div class="icon">🤝</div><div class="value">+1.5</div><div class="unit">pts x Assist</div></div>
+                <div class="pwr-card card-int"><div class="icon">🚫</div><div class="value">+1.0</div><div class="unit">pt x Interrup</div></div>
+                <div class="pwr-card card-score"><div class="icon">🏀</div><div class="value">+1.0</div><div class="unit">pt x 10 pts inc.</div></div>
+                <div class="pwr-card card-dmg"><div class="icon">⚔️</div><div class="value">+1.0</div><div class="unit">pt x 1k Daño</div></div>
+                <div class="pwr-card card-tank"><div class="icon">🛡️</div><div class="value">+0.8</div><div class="unit">pts x 1k Recibido</div></div>
+                <div class="pwr-card card-heal"><div class="icon">💚</div><div class="value">+1.2</div><div class="unit">pts x 1k Curado</div></div>
+                <div class="pwr-card card-wr" style="border-left: none; border-top: 1px solid #334155; width: 100%; max-width: 400px; flex-direction: row; gap: 15px; justify-content: flex-start; padding-left: 30px;"><div class="icon" style="margin:0;">📈</div><div><div class="value" style="font-size: 1.1em;">Multiplicador Activo</div><div class="unit" style="text-align:left; color:#cbd5e1; margin-top:0;">Potencia tu base con tu Win Rate %</div></div></div>
+            </div>
+        </div>
+
         <table>
             <thead><tr><th style="width: 50px; text-align: center;">Rnk</th><th>Entrenador</th><th>Win Rate</th><th style="width: 140px;">K | A | I (Tot / Avg)</th><th>Desempeño (Tot / Avg)</th></tr></thead>
             <tbody id="rTable"><tr><td colspan="5" style="text-align: center;">Sincronizando con los servidores de Firebase... 🔥</td></tr></tbody>
@@ -78,7 +94,7 @@
     <div id="p" class="content">
         
         <div class="pwr-legend">
-            <h3>⚡ El PWR (Escala Desbloqueada)</h3>
+            <h3>⚡ El Códex PWR (Escala Desbloqueada)</h3>
             <div class="pwr-legend-subtitle">El sistema evalúa la <b>Eficiencia Integral</b> sumando promedios y potenciándolos por el Win Rate %. El cálculo toma como base un esfuerzo brutal de 400 puntos. <b>¡Si superas esa métrica, tu PWR romperá el límite de 100!</b></div>
             <div class="pwr-cards-container">
                 <div class="pwr-card card-kill"><div class="icon">💀</div><div class="value">+2.0</div><div class="unit">pts x Kill</div></div>
@@ -102,7 +118,7 @@
 </div>
 
 <script>
-    // --- CONEXIÓN A FIREBASE REALTIME DATABASE ---
+    // --- CONEXIÓN DIRECTA A TU FIREBASE ---
     const FIREBASE_URL = 'https://ranking-fj-cb29e-default-rtdb.firebaseio.com'; 
     let dataNube = { temporada: {}, permanente: {} };
 
@@ -120,7 +136,6 @@
             const wr = (p.vic / numP) * 100;
             const perfScore = ((p.k/numP)*2) + ((p.a/numP)*1.5) + (((p.i_stats||0)/numP)*1) + (((p.pts_tot||0)/numP)/10) + (((p.d_tot/numP)/1000)*1) + (((p.rec_tot||0)/numP)/1000*0.8) + (((p.cur_tot||0)/numP)/1000*1.2);
             
-            // FÓRMULA ACTUALIZADA: Sin límite
             let final100Score = (perfScore * (1 + (wr / 100))) / 4;
 
             return { 
